@@ -7,21 +7,21 @@ from sms.models import User, List, SMS, Configuration
 
 class UserModelTest(TestCase):
     def test_number_max_length(self):
-        user = User(number='1234567890123456')
+        user = User(number="1234567890123456")
         with self.assertRaises(ValidationError):
             user.full_clean()
 
     def test_number_unique(self):
-        User.objects.create(number='123456789012345')
+        User.objects.create(number="123456789012345")
         with self.assertRaises(IntegrityError):
-            User.objects.create(number='123456789012345')
+            User.objects.create(number="123456789012345")
 
 
 class ListModelTest(TestCase):
     def test_add_users_to_list(self):
-        list_obj = List.objects.create(name='Test List')
-        user1 = User.objects.create(number='1234567890')
-        user2 = User.objects.create(number='0987654321')
+        list_obj = List.objects.create(name="Test List")
+        user1 = User.objects.create(number="1234567890")
+        user2 = User.objects.create(number="0987654321")
 
         list_obj.users.add(user1, user2)
 
@@ -36,11 +36,13 @@ class ListModelTest(TestCase):
 
 class SMSModelTest(TestCase):
     def test_create_sms(self):
-        sender = User.objects.create(number='1234567890')
-        receiver = User.objects.create(number='0987654321')
+        sender = User.objects.create(number="1234567890")
+        receiver = User.objects.create(number="0987654321")
         content = "Hello, this is a test message."
 
-        sms = SMS.objects.create(sender=sender, receiver=receiver, content=content, timestamp=timezone.now())
+        sms = SMS.objects.create(
+            sender=sender, receiver=receiver, content=content, timestamp=timezone.now()
+        )
 
         self.assertEqual(sms.sender, sender)
         self.assertEqual(sms.receiver, receiver)
