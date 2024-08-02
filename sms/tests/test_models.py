@@ -7,14 +7,24 @@ from sms.models import User, List, SMS, Configuration
 
 class UserModelTest(TestCase):
     def test_number_max_length(self):
-        user = User(number="1234567890123456")
+        user = User(number="1234567890123456", name="John Doe")
         with self.assertRaises(ValidationError):
             user.full_clean()
 
     def test_number_unique(self):
-        User.objects.create(number="123456789012345")
+        User.objects.create(number="123456789012345", name="John Doe")
         with self.assertRaises(IntegrityError):
-            User.objects.create(number="123456789012345")
+            User.objects.create(number="123456789012345", name="Jane Smith")
+
+    def test_name_max_length(self):
+        user = User(number="1234567890", name="J" * 256)
+        with self.assertRaises(ValidationError):
+            user.full_clean()
+
+    def test_create_user_with_valid_data(self):
+        user = User.objects.create(number="1234567890", name="John Doe")
+        self.assertEqual(user.number, "1234567890")
+        self.assertEqual(user.name, "John Doe")
 
 
 class ListModelTest(TestCase):
