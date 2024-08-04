@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from sms.serializers import UserSerializer, ListSerializer
 
 
-class UserViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
+class UserViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin, mixins.ListModelMixin):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
