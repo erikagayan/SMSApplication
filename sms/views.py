@@ -14,11 +14,15 @@ class UserViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin, mixins.ListM
 class ListViewSet(
     viewsets.GenericViewSet,
     mixins.CreateModelMixin,
+    mixins.ListModelMixin,
     mixins.UpdateModelMixin,
     mixins.RetrieveModelMixin,
 ):
     queryset = List.objects.all()
     serializer_class = ListSerializer
+
+    def perform_create(self, serializer):
+        serializer.save()
 
     @action(detail=True, methods=["post"])
     def add_user(self, request, pk=None):

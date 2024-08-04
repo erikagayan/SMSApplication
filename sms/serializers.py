@@ -10,7 +10,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 class ListSerializer(serializers.ModelSerializer):
     users = UserSerializer(many=True, read_only=True)
-    created_by = UserSerializer(read_only=True)
+    created_by = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
 
     class Meta:
         model = List
