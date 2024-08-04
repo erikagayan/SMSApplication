@@ -9,8 +9,8 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class ListSerializer(serializers.ModelSerializer):
-    users = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), many=True)
-    created_by = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    users = UserSerializer(many=True, read_only=True)
+    created_by = UserSerializer(read_only=True)
 
     class Meta:
         model = List
