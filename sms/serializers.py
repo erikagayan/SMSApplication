@@ -1,4 +1,4 @@
-from sms.models import User, List
+from sms.models import User, List, SMS
 from rest_framework import serializers
 
 
@@ -15,3 +15,9 @@ class ListSerializer(serializers.ModelSerializer):
     class Meta:
         model = List
         fields = ["id", "name", "users", "created_by"]
+
+
+class SMSSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SMS
+        fields = ["id", "sender", "receiver", "content", "timestamp"]

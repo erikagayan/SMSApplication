@@ -1,9 +1,9 @@
 from rest_framework import status
-from sms.models import List, User
+from sms.models import List, User, SMS
 from rest_framework import viewsets, mixins
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from sms.serializers import UserSerializer, ListSerializer
+from sms.serializers import UserSerializer, ListSerializer, SMSSerializer
 
 
 class UserViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin, mixins.ListModelMixin):
@@ -53,3 +53,27 @@ class ListViewSet(
             return Response(
                 {"error": "User not found"}, status=status.HTTP_404_NOT_FOUND
             )
+
+    @action(detail=True, methods=['post'])
+    def send_sms(self, request, pk=None):
+        list_obj = self.get_object()
+        sender_id = request.data.get("sender_id")
+        content = request.data.get("content")
+
+        try:
+            sender = User.objects.get(id=sender_id)
+        except User.DoesNotExist:
+            return Response({"error": "Sender not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        for user in list_obj.users.all():
+            sms = SMS.objects.create(sender=sender, receiver=user, content=content)
+            sms.save()
+
+        return Response({"status": "SMS sent"}, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['get'])
+    def get_sms(self, request, pk=None):
+        list_obj = self.get_object()
+        sms_list = SMS.objects.filter(receiver__in=list_obj.users.all())
+        serializer = SMSSerializer(sms_list, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
