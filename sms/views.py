@@ -3,6 +3,7 @@ from sms.models import List, User, SMS
 from rest_framework import viewsets, mixins
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from sms.synchronization import synchronize_list
 from sms.serializers import UserSerializer, ListSerializer, SMSSerializer
 
 
@@ -77,3 +78,14 @@ class ListViewSet(
         sms_list = SMS.objects.filter(receiver__in=list_obj.users.all())
         serializer = SMSSerializer(sms_list, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['post'])
+    def synchronize(self, request, pk=None):
+        endpoint = request.data.get("endpoint")
+        params = request.data.get("params", {})
+
+        try:
+            synchronize_list(pk, endpoint, params)
+            return Response({"status": "Synchronization completed"}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
